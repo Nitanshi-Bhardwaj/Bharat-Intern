@@ -1,0 +1,24 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+df = pd.read_csv("/content/train.csv") 
+print(df.head())
+X_train, X_test, y_train, y_test = train_test_split(df['sms'], df['label'], test_size=0.2, random_state=42)
+vectorizer = CountVectorizer()
+X_train_vectorized = vectorizer.fit_transform(X_train)
+X_test_vectorized = vectorizer.transform(X_test)
+classifier = MultinomialNB()
+classifier.fit(X_train_vectorized, y_train)
+y_pred = classifier.predict(X_test_vectorized)
+accuracy = accuracy_score(y_test, y_pred)
+conf_matrix = confusion_matrix(y_test, y_pred)
+class_report = classification_report(y_test, y_pred)
+print(f"Accuracy: {accuracy}")
+print(f"Confusion Matrix:\n{conf_matrix}")
+print(f"Classification Report:\n{class_report}")
+new_sms = ["Congratulations! You've won a free iPhone. Click here to claim your prize."]
+new_sms_vectorized = vectorizer.transform(new_sms)
+prediction = classifier.predict(new_sms_vectorized)
+print(f"Prediction for the new SMS: {prediction}")
